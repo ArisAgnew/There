@@ -16,6 +16,7 @@ namespace FunctionalThere
             Test test = new Test();
 
             test.GetNewValueTest();
+            WriteLine(test.GetNewValueTest());
             test.StringExecution();
             
             WriteLine();
@@ -36,15 +37,12 @@ namespace FunctionalThere
                 .Condition(v => v.Equals(23))
                 .InCaseOfTrue(t => WriteLine($"Содержится: {t}"))
                 .InCaseOfFalse(f => WriteLine($"Не Содержится: {f}"))
-                .InCaseOfTrueGetNewValue(() => 89);
+                .InCaseOfFalseGetValueOtherwiseThrow(() => new InvalidProgramException(nameof(InvalidProgramException)));
 
-        internal void StringExecution()
-        {
-            There<string>.IsNullable(RESPONSE_SUCCESS_CREATED)
+        internal void StringExecution() => There<string>.IsNullable(RESPONSE_SUCCESS_CREATED)
                 .Condition(v => v.StartsWith("<a") && v.Contains("Su"))
                 .InCaseOfTrue(t => WriteLine($"Содержится: {t}"))
                 .InCaseOfFalse(f => WriteLine($"Не Содержится: {f}"))
-                .InCaseOfFalseThrow(() => new InvalidCastException("YOU"));
-        }
+                .InCaseOfFalseThrow(() => new InvalidCastException("YOU"));        
     }
 }
