@@ -8,24 +8,16 @@ namespace FunctionalThere
 {
     public static class PredicateStuff
     {
-        public static Predicate<T> And<T>(this Predicate<T> first, Predicate<T> second)
-        {
-            return (T type) => first.RequireNonNull().Invoke(type) && second.RequireNonNull().Invoke(type);
-        }
+        public static Predicate<T> And<T>(this Predicate<T> first, Predicate<T> second) => 
+            (T type) => first.RequireNonNull()(type) && second.RequireNonNull()(type);
 
-        public static Predicate<T> Or<T>(this Predicate<T> first, Predicate<T> second)
-        {
-            return (T type) => first.RequireNonNull().Invoke(type) || second.RequireNonNull().Invoke(type);
-        }
+        public static Predicate<T> Or<T>(this Predicate<T> first, Predicate<T> second) => 
+            (T type) => first.RequireNonNull()(type) || second.RequireNonNull()(type);
 
-        public static Predicate<T> Negate<T>(this Predicate<T> predicate)
-        {            
-            return (T type) => !predicate.RequireNonNull().Invoke(type);
-        }
-                
-        public static Predicate<T> IsEqual<T>(object target)
-        {
-            return (T @object) => target.RequireNonNull().Equals(@object);
-        }
+        public static Predicate<T> Negate<T>(this Predicate<T> predicate) => 
+            (T type) => !predicate.RequireNonNull()(type);
+
+        public static Predicate<T> IsEqual<T>(dynamic target) => 
+            (T obj) => target.RequireNonNull().Equals(obj);
     }
 }
