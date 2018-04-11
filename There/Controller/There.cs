@@ -15,37 +15,19 @@ namespace FunctionalThere
 
         private There() {}
 
-        private There(S _value)
-        {
-            value = _value.RequireNonNull("value is null");
-        }
+        private There(S _value) => value = _value.RequireNonNull("value is null");
 
-        private There(Supplier<S> supplier_value)
-        {
-            value = supplier_value.RequireNonNull("value is null").Invoke();
-        }
+        private There(Func<S> supplier_value) => value = supplier_value.RequireNonNull("value is null").Invoke();
 
         private static There<S> Empty() => new There<S>();
 
-        public static There<S> Is(S input)
-        {
-            return new There<S>(input);
-        }
+        public static There<S> Is(S input) => new There<S>(input);
 
-        public static There<S> Is(Supplier<S> supplier_input)
-        {
-            return new There<S>(supplier_input);
-        }
+        public static There<S> Is(Func<S> supplier_input) => new There<S>(supplier_input);
 
-        public static There<S> IsNullable(S input)
-        {
-            return input != null ? Is(input) : Empty();
-        }
+        public static There<S> IsNullable(S input) => input != null ? Is(input) : Empty();
 
-        public static There<S> IsNullable(Supplier<S> supplier_input)
-        {
-            return supplier_input != null ? Is(supplier_input) : Empty();
-        }
+        public static There<S> IsNullable(Func<S> supplier_input) => supplier_input != null ? Is(supplier_input) : Empty();
     }
 
     /// <summary>
@@ -102,7 +84,7 @@ namespace FunctionalThere
             return this;
         }
         
-        public IThere<S> InCaseOfTrue(Supplier<S> supplier)
+        public IThere<S> InCaseOfTrue(Func<S> supplier)
         {
             Filter(BasePredicate).IfPresent(c => supplier.Invoke());
             return this;
@@ -120,7 +102,7 @@ namespace FunctionalThere
             return this;
         }
         
-        public IThere<S> InCaseOfFalse(Supplier<S> supplier)
+        public IThere<S> InCaseOfFalse(Func<S> supplier)
         {
             Filter(BasePredicate.Negate()).IfPresent(c => supplier.Invoke());
             return this;
@@ -159,14 +141,14 @@ namespace FunctionalThere
             }
         }
 
-        public V InCaseOfTrueGetNewValue<V>(Supplier<V> supplier)
+        public V InCaseOfTrueGetNewValue<V>(Func<V> supplier)
         {
             supplier.RequireNonNull();
             if (IsBasePredicateTrue)
             {
                 return supplier.Invoke();
             }
-            else return default(V);
+            else return default;
         }
         
         public V InCaseOfTrueGetNewValue<V>(Func<S, V> function)
@@ -176,7 +158,7 @@ namespace FunctionalThere
             {
                 return function.Invoke(value);
             }
-            else return default(V);
+            else return default;
         }
 
         public void InCaseOfFalseGetNewValue(ThreadStart runnable)
@@ -197,14 +179,14 @@ namespace FunctionalThere
             }
         }
 
-        public V InCaseOfFalseGetNewValue<V>(Supplier<V> supplier)
+        public V InCaseOfFalseGetNewValue<V>(Func<V> supplier)
         {
             supplier.RequireNonNull();
             if (!IsBasePredicateTrue)
             {
                 return supplier.Invoke();
             }
-            else return default(V);
+            else return default;
         }
 
         public V InCaseOfFalseGetNewValue<V>(Func<S, V> function)
@@ -214,7 +196,7 @@ namespace FunctionalThere
             {
                 return function.Invoke(value);
             }
-            else return default(V);
+            else return default;
         }
     }
 
@@ -224,7 +206,7 @@ namespace FunctionalThere
     /// <typeparam name="S"></typeparam>
     public sealed partial class There<S>
     {
-        public void InCaseOfTrueThrow<E>(Supplier<E> ExceptionSupplier) where E : Exception
+        public void InCaseOfTrueThrow<E>(Func<E> ExceptionSupplier) where E : Exception
         {
             ExceptionSupplier.RequireNonNull();
             if (Filter(BasePredicate).IsPresent())
@@ -233,7 +215,7 @@ namespace FunctionalThere
             }
         }
 
-        public S InCaseOfTrueGetValueOtherwiseThrow<E>(Supplier<E> ExceptionSupplier) where E : Exception
+        public S InCaseOfTrueGetValueOtherwiseThrow<E>(Func<E> ExceptionSupplier) where E : Exception
         {
             ExceptionSupplier.RequireNonNull();
             if (Filter(BasePredicate.Negate()).IsPresent())
@@ -243,7 +225,7 @@ namespace FunctionalThere
             else throw ExceptionSupplier.Invoke();
         }
 
-        public void InCaseOfFalseThrow<E>(Supplier<E> ExceptionSupplier) where E : Exception
+        public void InCaseOfFalseThrow<E>(Func<E> ExceptionSupplier) where E : Exception
         {
             ExceptionSupplier.RequireNonNull();
             if(Filter(BasePredicate.Negate()).IsPresent())
@@ -252,7 +234,7 @@ namespace FunctionalThere
             }
         }
 
-        public S InCaseOfFalseGetValueOtherwiseThrow<E>(Supplier<E> ExceptionSupplier) where E : Exception
+        public S InCaseOfFalseGetValueOtherwiseThrow<E>(Func<E> ExceptionSupplier) where E : Exception
         {
             ExceptionSupplier.RequireNonNull();
             if (Filter(BasePredicate).IsPresent())
@@ -262,7 +244,7 @@ namespace FunctionalThere
             else throw ExceptionSupplier.Invoke();
         }
 
-        public void ThenThrow<E>(Supplier<E> ExceptionSupplier) where E : Exception
+        public void ThenThrow<E>(Func<E> ExceptionSupplier) where E : Exception
         {
             ExceptionSupplier.RequireNonNull();
             throw ExceptionSupplier.Invoke();

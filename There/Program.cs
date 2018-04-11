@@ -15,10 +15,10 @@ namespace FunctionalThere
         {
             Test test = new Test();
 
-            test.GetNewValueTest();
-            WriteLine(test.GetNewValueTest());
-            test.StringExecution();
-            
+            //test.GetNewValueOtherwiseThrowTest();
+            //test.StringExecution();
+
+            WriteLine(test.GetNewValueTest("Hi!"));
             WriteLine();
             ReadKey();
         }
@@ -33,7 +33,7 @@ namespace FunctionalThere
         /// It happened if you need to use any digit type you have to make it through Object class/object keyword
         /// </summary>
         /// <returns></returns>
-        internal object GetNewValueTest() => There<object>.IsNullable(@INT)
+        internal object GetNewValueOtherwiseThrowTest() => There<object>.IsNullable(@INT)
                 .Condition(v => v.Equals(23))
                 .InCaseOfTrue(t => WriteLine($"Содержится: {t}"))
                 .InCaseOfFalse(f => WriteLine($"Не Содержится: {f}"))
@@ -43,6 +43,25 @@ namespace FunctionalThere
                 .Condition(v => v.StartsWith("<a") && v.Contains("Su"))
                 .InCaseOfTrue(t => WriteLine($"Содержится: {t}"))
                 .InCaseOfFalse(f => WriteLine($"Не Содержится: {f}"))
-                .InCaseOfFalseThrow(() => new InvalidCastException("YOU"));        
+                .InCaseOfFalseThrow(() => new InvalidCastException("YOU"));
+
+        internal object GetNewValueTest(string str) => 
+            There<object>.IsNullable(str).Condition(s => string.IsNullOrEmpty((string)s)).InCaseOfTrueGetNewValue(() => $"Yes it's true: ");
+
+        //doesn't work properly, it has to be improved
+        internal string MemKek(string str)
+        {
+            There<string>.IsNullable(str)
+                .Condition(s => string.IsNullOrEmpty(s))
+                .InCaseOfTrueGetNewValue(output => string.Format($"Empty String: {output}"));
+                       
+            for (int i = 0; i < str.Length - 1; i++)
+            {
+                There<string>.IsNullable(str)
+                    .Condition(s => str[i] == str[i + 1])
+                    .InCaseOfTrueGetNewValue(output => MemKek(str.Substring(0, i) + str.Substring(i + 2)));
+            }
+            return str;
+        }
     }
 }

@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FunctionalThere
+namespace ConsoleApplication1
 {
-    public delegate TResult Supplier<out TResult>();
+    interface IGetStep
+    {
+    }
 }
